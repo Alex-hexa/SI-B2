@@ -10,21 +10,34 @@ class Book:
 
 # Vérifie si le fichier 'library.json' existe
 if not os.path.exists('library.json'):
-    # Le crée s'il n'existe pas
+    # Create an empty 'library.json' file
     with open('library.json', 'w') as file:
         json.dump([], file)
+
+def is_ascii(s):
+    return all(ord(c) < 128 for c in s)
 
 # Fonction create
 def create():
     title = input("Enter the title: ")
     tag = input("Enter the tag: ")
-    image = input("Enter the image: ")
+    print("Enter the image in ASCII (end with an empty line): ")
+    lines = []
+    while True:
+        line = input()
+        if line == "":
+            break
+        if not is_ascii(line):
+            print("Non-ASCII character detected. Please enter the image in ASCII.")
+            return
+        lines.append(line)
+    image = "\n".join(lines)
     new_book = Book(tag, title, image)
     with open('library.json', 'r') as file:
         library = json.load(file)
     library.append(new_book.__dict__)
     with open('library.json', 'w') as file:
-        json.dump(library, file)
+        json.dump(library, file, indent=4)
     print("Book created successfully")
 
 # Fonction update
@@ -35,11 +48,21 @@ def update():
     for book in library:
         if book['title'] == title:
             tag = input("Enter the tag: ")
-            image = input("Enter the image: ")
+            print("Enter the image in ASCII (end with an empty line): ")
+            lines = []
+            while True:
+                line = input()
+                if line == "":
+                    break
+                if not is_ascii(line):
+                    print("Non-ASCII character detected. Please enter the image in ASCII.")
+                    return
+                lines.append(line)
+            image = "\n".join(lines)
             book['tag'] = tag
             book['image'] = image
             with open('library.json', 'w') as file:
-                json.dump(library, file)
+                json.dump(library, file, indent=4)
             print("Book updated successfully")
             break
     else:
@@ -53,7 +76,7 @@ def read():
     for book in library:
         if book['title'] == title:
             print("Tag:", book['tag'])
-            print("Image:", book['image'])
+            print("Image:\n", book['image'])
             break
     else:
         print("Book not found")
@@ -67,7 +90,7 @@ def read_all():
     for book in library:
         print("Title:", book['title'])
         print("Tag:", book['tag'])
-        print("Image:", book['image'])
+        print("Image:\n", book['image'])
         print("--------------------")
 
 # Fonction delete
@@ -79,7 +102,7 @@ def delete():
         if book['title'] == title:
             library.remove(book)
             with open('library.json', 'w') as file:
-                json.dump(library, file)
+                json.dump(library, file, indent=4)
             print("Book deleted successfully")
             break
     else:
