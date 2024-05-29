@@ -32,13 +32,24 @@ def create():
             return
         lines.append(line)
     image = "\n".join(lines)
-    new_book = Book(tag, title, image)
+    
+    # Check if the book already exists
     with open('library.json', 'r') as file:
         library = json.load(file)
+    for book in library:
+        if book['title'] == title and book['tag'] == tag:
+            print("Book already exists")
+            return
+
+    # Add the new book to the library
+    new_book = Book(tag, title, image)
     library.append(new_book.__dict__)
+    
+    # Save the updated library back to the file
     with open('library.json', 'w') as file:
         json.dump(library, file, indent=4)
     print("Book created successfully")
+
 
 # Fonction update
 def update():
